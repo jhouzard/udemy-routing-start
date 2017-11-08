@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
+import {AuthService} from "../auth.service";
 
 @Component({
     selector: 'app-home',
@@ -8,10 +9,9 @@ import {Router} from "@angular/router";
 })
 export class HomeComponent implements OnInit {
 
-    constructor(private router: Router) {
-    }
+    authenticated: boolean = false;
 
-    ngOnInit() {
+    constructor(private router: Router, private authService: AuthService) {
     }
 
     onLoadServers() {
@@ -27,4 +27,27 @@ export class HomeComponent implements OnInit {
             },
         )
     }
+
+
+    ngOnInit(): void {
+
+        this.authService.isAuthenticated().then((authenticated: boolean) => {
+            console.log("is authenticated? " + authenticated);
+            this.authenticated = authenticated;
+        });
+
+        this.authService.statusChanged.subscribe((authenticated: boolean) => {
+            this.authenticated = authenticated;
+        });
+
+    }
+
+    onLogin() {
+        this.authService.login();
+    }
+
+    onLogout() {
+        this.authService.logout();
+    }
+
 }
